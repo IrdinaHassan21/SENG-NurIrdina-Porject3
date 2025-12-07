@@ -1,23 +1,21 @@
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CatCollector.API.Data;
-using CatCollector.API.Dtos;
-using CatCollector.API.Models;
-using CatCollector.API.Services;
+using CatCollectorAPI.Data;
+using CatCollectorAPI.DTOs;
+using CatCollectorAPI.Services;
+using System.Security.Cryptography;
+using System.Text;
 
-namespace CatCollector.API.Controllers
+namespace CatCollectorAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly AppDbContext _db;
+        private readonly GameDbContext _db;
         private readonly JwtService _jwt;
 
-        public AuthController(AppDbContext db, JwtService jwt)
+        public AuthController(GameDbContext db, JwtService jwt)
         {
             _db = db;
             _jwt = jwt;
@@ -27,11 +25,11 @@ namespace CatCollector.API.Controllers
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             if (await _db.Users.AnyAsync(u => u.Username == dto.Username))
-                return BadRequest(new { message = "Username taken" });
+                return BadRequest(new { message = "Username already exists." });
 
             CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
 
-            var user = new User
+            var user = new AppUser
             {
                 Username = dto.Username,
                 PasswordHash = hash,

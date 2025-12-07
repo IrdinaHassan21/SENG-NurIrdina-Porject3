@@ -1,8 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CatCollector.API.Models
+namespace CatCollectorAPI.Models
 {
     public class Player
     {
@@ -13,12 +12,13 @@ namespace CatCollector.API.Models
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
+        // counts per cat type
         public int GoodCatsCollected { get; set; }
         public int BadCatsCollected { get; set; }
-        public int ChonkyCatsCollected { get; set; }
-        public int BestScore { get; set; }
 
-        [NotMapped]
-        public int TotalCats => GoodCatsCollected + BadCatsCollected + ChonkyCatsCollected;
+        // backend name is FatCatsCollected (chonky)
+        public int FatCatsCollected { get; set; }
+
+        public int BestScore { get; set; }
     }
 }

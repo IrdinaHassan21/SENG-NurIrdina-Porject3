@@ -1,33 +1,33 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CatCollector.API.Data;
-using CatCollector.API.Dtos;
-using CatCollector.API.Models;
+using Microsoft.AspNetCore.Authorization;
+using CatCollectorAPI.Data;
+using CatCollectorAPI.DTOs;
+using CatCollectorAPI.Models;
 
-namespace CatCollector.API.Controllers
+namespace CatCollectorAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class PlayersController : ControllerBase
     {
-        private readonly AppDbContext _db;
-        public PlayersController(AppDbContext db) => _db = db;
+        private readonly GameDbContext _db;
+
+        public PlayersController(GameDbContext db) => _db = db;
 
         // GET: api/players
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var players = await _db.Players.OrderByDescending(p => p.BestScore).ToListAsync();
+            var players = await _db.Players
+                .OrderByDescending(p => p.BestScore)
+                .ToListAsync();
             return Ok(players);
         }
 
         // GET: api/players/{id}
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var p = await _db.Players.FindAsync(id);
             if (p == null) return NotFound();
@@ -39,24 +39,17 @@ namespace CatCollector.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PlayerCreateDto dto)
         {
-            if (await _db.Players.AnyAsync(x => x.Name == dto.Name))
-                return BadRequest(new { message = "Player name exists" });
+            if (string.IsNullOrWhiteSpace(dto.Name)) return BadRequest("Name is required");
+            if (await _db.Players.AnyAsync(p => p.Name.ToLower() == dto.Name.Trim().ToLower()))
+                return BadRequest("Player name already exists");
 
-            var player = new Player
-            {
-                Name = dto.Name,
-                GoodCatsCollected = dto.GoodCatsCollected,
-                BadCatsCollected = dto.BadCatsCollected,
-                ChonkyCatsCollected = dto.ChonkyCatsCollected,
-                BestScore = dto.BestScore
-            };
-
+            var player = new Player { Name = dto.Name.Trim() };
             _db.Players.Add(player);
             await _db.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = player.Id }, player);
+            return CreatedAtAction(nameof(GetById), new { id = player.Id }, player);
         }
 
-        // PUT: api/players/{id}
+        // PUT: api/players/{id} (update full)
         [Authorize]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, PlayerUpdateDto dto)
@@ -64,11 +57,14 @@ namespace CatCollector.API.Controllers
             var p = await _db.Players.FindAsync(id);
             if (p == null) return NotFound();
 
-            p.Name = dto.Name;
+            if (dto.BestScore < 0 || dto.GoodCatsCollected < 0 || dto.BadCatsCollected < 0 || dto.FatCatsCollected < 0)
+                return BadRequest("Counts cannot be negative");
+
+            p.BestScore = dto.BestScore;
             p.GoodCatsCollected = dto.GoodCatsCollected;
             p.BadCatsCollected = dto.BadCatsCollected;
-            p.ChonkyCatsCollected = dto.ChonkyCatsCollected;
-            p.BestScore = dto.BestScore;
+            p.FatCatsCollected = dto.FatCatsCollected;
+
             await _db.SaveChangesAsync();
             return NoContent();
         }
@@ -86,11 +82,14 @@ namespace CatCollector.API.Controllers
         }
 
         // PUT: api/players/update-score
+        // Upsert by name — intended for the frontend to call when game ends
         [Authorize]
         [HttpPut("update-score")]
-        public async Task<IActionResult> UpsertByName(UpdateScoreDto dto)
+        public async Task<IActionResult> UpsertByName([FromBody] PlayerUpsertDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Name)) return BadRequest();
+            if (string.IsNullOrWhiteSpace(dto.Name)) return BadRequest("Name required");
+            if (dto.BestScore < 0 || dto.GoodCats < 0 || dto.BadCats < 0 || dto.FatCats < 0)
+                return BadRequest("Counts cannot be negative");
 
             var name = dto.Name.Trim();
             var p = await _db.Players.SingleOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());
@@ -103,20 +102,31 @@ namespace CatCollector.API.Controllers
                     BestScore = dto.BestScore,
                     GoodCatsCollected = dto.GoodCats,
                     BadCatsCollected = dto.BadCats,
-                    ChonkyCatsCollected = dto.ChonkyCats
+                    FatCatsCollected = dto.FatCats
                 };
                 _db.Players.Add(p);
             }
             else
             {
+                // keep BestScore as the max
                 p.GoodCatsCollected += dto.GoodCats;
                 p.BadCatsCollected += dto.BadCats;
-                p.ChonkyCatsCollected += dto.ChonkyCats;
+                p.FatCatsCollected += dto.FatCats;
                 if (dto.BestScore > p.BestScore) p.BestScore = dto.BestScore;
             }
 
             await _db.SaveChangesAsync();
             return Ok(p);
         }
+    }
+
+    // DTO used by upsert endpoint
+    public class PlayerUpsertDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public int BestScore { get; set; }
+        public int GoodCats { get; set; }
+        public int BadCats { get; set; }
+        public int FatCats { get; set; }
     }
 }

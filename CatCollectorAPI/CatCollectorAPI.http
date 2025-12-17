@@ -1,0 +1,6 @@
+@CatCollectorAPI_HostAddress = http://localhost:5202
+
+GET {{CatCollectorAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

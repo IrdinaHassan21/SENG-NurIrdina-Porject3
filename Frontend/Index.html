@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cat Collector</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <h1 id="gameTitle">Cat Collector</h1>
+
+  <!-- Player Login -->
+  <div id="playerNameContainer">
+    <label><strong>Player Name:</strong></label>
+    <input type="text" id="playerName" placeholder="Enter your name" />
+
+    <label><strong>Password:</strong></label>
+    <input type="password" id="playerPassword" placeholder="Enter password" />
+
+    <button id="savePlayerBtn">Save</button>
+  </div>
+
+  <div class="container">
+
+    <!-- Game Area -->
+    <div class="game-area">
+      <canvas id="gameCanvas" width="800" height="500" tabindex="0"></canvas>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <button id="startBtn">Start Game</button>
+      <button id="restartBtn">Restart Game</button>
+
+      <h2>How to Play</h2>
+      <p>• Use arrow keys to move</p>
+      <p>• Collect cats (+1 score)</p>
+      <p>• Collect fat chonky cats (+2 score)</p>
+      <p>• Collect bad cats (-1 score)</p>
+      <p>• Speed increases every 10 seconds</p>
+
+      <h3>Your Score: <span id="score">0</span></h3>
+      <h3>High Score: <span id="highScore">0</span></h3>
+      <h3>Time Left: <span id="timeLeft">60</span></h3>
+    </div>
+
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard-container">
+    <h2>Leaderboard</h2>
+    <table id="leaderboard" class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Best Score</th>
+          <th>Good Cats</th>
+          <th>Bad Cats</th>
+          <th>Chonky Cats</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

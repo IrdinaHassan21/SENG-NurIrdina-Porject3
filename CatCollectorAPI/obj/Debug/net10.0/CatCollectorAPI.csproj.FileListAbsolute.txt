@@ -168,3 +168,4 @@
 /home/dina/CatCollector/CatCollectorAPI/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
 /home/dina/CatCollector/CatCollectorAPI/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /home/dina/CatCollector/CatCollectorAPI/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/home/dina/CatCollector/CatCollectorAPI/obj/Debug/net10.0/CatCollectorAPI.sourcelink.json

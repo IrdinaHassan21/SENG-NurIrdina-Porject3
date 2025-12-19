@@ -10,6 +10,7 @@ public class GameDbContext : DbContext
 
     public DbSet<Player> Players => Set<Player>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<GameResult> GameResults => Set<GameResult>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

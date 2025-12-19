@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CatCollectorAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9699798ed20830b3a6a83aaceb1adad4cdde3a1a")]
 [assembly: System.Reflection.AssemblyProductAttribute("CatCollectorAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CatCollectorAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
